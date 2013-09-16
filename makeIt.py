@@ -1,28 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from subprocess import Popen, PIPE
-import time
-
-startTime = time.time()
-
 access_key = 'AKIAJPIDXTUN6JJOU7KA'
 secret_key = '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'
 
+user = 'coursera'
+password = 'optimization is fun'
+
+host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
+database = 'dopt_results'
+
+
+from subprocess import Popen, PIPE
+import time
 import boto.sns
+
+startTime = time.time()
 
 sns_conn = boto.sns.connect_to_region(aws_access_key_id=access_key,
                                       aws_secret_access_key=secret_key,
                                       region_name='us-east-1')
-
-import boto.s3.connection
-from boto.s3.bucket import Bucket
-from boto.s3.key import Key
-
-conn = boto.connect_s3(aws_access_key_id=access_key,
-                       aws_secret_access_key=secret_key,
-                       calling_format=boto.s3.connection.OrdinaryCallingFormat())
-
 
 import mysql.connector
 from mysql.connector import errorcode
@@ -40,61 +37,6 @@ assignmentAllSummaryTmpl = Template(filename='assignmentAllSummary.tmpl',lookup=
 assignmentAllNotEnoughTmpl = Template(filename='assignmentAllNotEnough.tmpl',lookup=mylookup)
 assignmentStartTmpl = Template(filename='assignmentStart.tmpl',lookup=mylookup)
 assignmentEndTmpl = Template(filename='assignmentEnd.tmpl',lookup=mylookup)
-
-start = time.clock()
-
-# assignmentTmpl = Template(filename='header.tmpl')
-# FooterTmpl = Template(filename='footer.tmpl')
-
-from lbsql import CourseraLeaderDB
-
-db = CourseraLeaderDB()
-db.open()
-
-bud_results = db.maxBoardID()
-
-# print bud_results
-
-if bud_results == None or len(bud_results) < 1 or bud_results[0][0] == None:
-    bid = 0
-else:
-    bid = bud_results[0][0] + 1
-print 'board id:', bid
-
-user = 'coursera'
-password = 'optimization is fun'
-
-# host='mysqldb.discreteoptimization.com'
-# database='coursera_results'
-
-host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
-database = 'dopt_results'
-
-import zipfile
-from datetime import datetime
-lid = -1;
-
-dopt = Bucket(conn, name='dopt-logs')
-
-for key in dopt.list():
-    name = key.name
-    if name.endswith('.zip') and name.startswith('leader_'):
-        num = int(name.split('.')[0].split('_')[1])
-        lid = max(lid,num)
-
-import os
-for (dirpath, dnames, fnames) in os.walk('./'):
-    for name in fnames:
-        #print dirpath, dnames, f
-        if name.endswith('.zip') and name.startswith('leader_'):
-            #print f, f.split('.')[0], f.split('.')[0].split('_')[1]
-            num = int(name.split('.')[0].split('_')[1])
-            lid = max(lid,num)
-
-lid += 1
-logFileName = 'leader_'+str(lid).zfill(8)+'.csv'
-zipFileName = 'leader_'+str(lid).zfill(8)+'.zip'
-print 'log:', lid, logFileName, zipFileName
 
 
 cnx = None
@@ -134,8 +76,6 @@ cursor.execute(lookup_users_query, query_data)
 users = cursor.fetchall()
 
 
-
-logStr = ''
 
 #assignments = assignments[2:3]
 for assignment in assignments:
@@ -253,9 +193,6 @@ for assignment in assignments:
                     assignmentID, 'part', partId
             usersSeen.add(userId)
 
-            # db.addRow(bid, userId, assignmentID, partId, r[2], r[3], r[4], i)
-            # rows.append([bid, userId, assignmentID, partId, r[2], r[3], r[4], i])
-
             try:
                 userRank[userId] = userRank[userId] + i
                 userResult[userId][partId] = r
@@ -269,7 +206,6 @@ for assignment in assignments:
             # print userId, " - ", userRank[userId]
 
         bestVals[partId] = bestVal
-        db.addRows(rows)
         for r in rows:
             #log.write(','.join(r)+'\n')
             logStr +=  ', '.join(r)+','+str(datetime.utcnow())+'\n'
@@ -395,17 +331,12 @@ for assignment in assignments:
     output.write(assignmentEndTmpl.render(dateAndTime=str(datetime.utcnow())))
     output.close()
 
-#log.close()
-zlog = zipfile.ZipFile(zipFileName, mode='w', compression=zipfile.ZIP_DEFLATED)
-zlog.writestr(logFileName, logStr)
-zlog.close()
 
 endTime = time.time()
 
 topicarn = 'arn:aws:sns:us-east-1:998334448481:leader'
 subject = 'Leader Board Built'
 message = 'time: '+str(endTime-startTime)+'\n'+\
-          'records: '+str(logStr.count('\n'))+'\n'+\
           'bid: '+str(bid)+'\n'+\
           'log: '+zipFileName+'\n';
 
