@@ -1,0 +1,1 @@
+rm *.zip *.pdf *.html *.png *.data

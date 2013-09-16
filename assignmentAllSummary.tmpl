@@ -1,0 +1,34 @@
+<p><a href="index.html">assignments list</a></p>
+
+<h3> Solution Summary - <a href="${assignmentID}.html">detailed view</a></h3>
+
+%for i, part in enumerate(parts):
+
+%if partDistResults[part[0]] == None:
+	<div class="clear"/>
+%endif
+
+<div class="part">
+<h4> ${part[3]} </h4>
+
+%if partDistResults[part[0]] == None:
+	<p>Insufficient data to present a summary.  See the <a href="${assignmentID}_${part[1]}.html">detailed view</a>.</p>
+%else:
+	<div class="dist">
+	<a href="${assignmentID}_${part[1]}.html"><img src="${partDistResults[part[0]]}.png" alt="a histogram of the ${part[3]} submission quality" height="400" width="400"></a>
+	</div>
+%endif
+
+</div>
+%if partDistResults[part[0]] == None:
+	<div class="clear"/>
+%endif
+
+%if i % 2 == 1:
+<div class="clear"/>
+%endif
+
+%endfor
+
+<div class="clear"/>
+<p>Note: The solution distributions exclude some of the low quality solutions.  The red line indicates the median of the distribution.</p>

@@ -1,0 +1,112 @@
+
+EC2 Credentials:
+
+ssh -i carleton.pem ec2-user@ec2-23-23-12-183.compute-1.amazonaws.com
+
+remote dir structure
+
+leader/<session id>
+
+start process:
+
+crontab schedule
+crontab -l
+crontab -r
+
+very useful:
+http://www.r-bloggers.com/installing-r-on-amazon-linux/
+
+for png on EC2:
+#yum install gd-devel
+#install.packages('GDD',,'http://www.rforge.net/')
+sudo yum install ImageMagick 
+
+convert -density 100x100 test_dist.pdf -resize 800x800 -density 800x800 test.png
+convert test_dist.pdf test.png
+convert -density 200 test_dist.pdf -resize 800 test.png
+
+
+
+export
+export PYTHONPATH=~/lib/python/
+import mysql.connector
+
+sys.path.append('~/lib/python/')
+
+PYTHONPATH=$PYTHONPATH:~/lib/python/
+
+import sys
+print(sys.path)
+sys.path.append('/home/ccoffrin/lib/python/')
+
+import sys
+#print(sys.path)
+sys.path.append('/home/ec2-user/lib/python/')
+
+import os
+os.system('echo $PATH')
+os.system('echo $PYTHONPATH')
+
+worst case leader board size:
+about 100 users submit all parts; time to build, negligible
+-rw-r--r--   1 carleton  staff  34869  7 May 22:58 4.html
+-rw-r--r--   1 carleton  staff   7608  7 May 22:57 4_1.html
+about 2000 users submit all parts; time to build negligible
+-rw-r--r--   1 carleton  staff  659969  8 May 09:29 4.html
+-rw-r--r--   1 carleton  staff  134908  8 May 09:29 4_1.html
+about 10000 users submit all parts; time to build 3m10s (with concurrent write ops)
+-rw-r--r--   1 carleton  staff  3936480  8 May 14:36 4.html
+-rw-r--r--   1 carleton  staff   802429  8 May 14:33 4_1.html
+about 20000 users submit all parts; time to build 0m57.408s (no concurrent write ops)
+-rw-r--r--   1 carleton  staff  6582298  9 May 09:21 4.html
+-rw-r--r--   1 carleton  staff  1340975  9 May 09:20 4_1.html
+compressed 4.html is 168kb
+
+
+IFrame Magic (which I was not able to get to work [cjc])
+
+In root page:
+<script type="text/javascript">
+    window.addEventListener('message', function (e) {
+        var $iframe = document.getElementById('theExternalPage')
+
+        var eventName = e.data[0];
+        var data      = e.data[1]+100;
+
+        switch (eventName) {
+            case 'setHeight':
+                $iframe.height = data+"px";
+                $iframe.scrollheight = data+"px";
+                $iframe.offsetheight = data+"px";
+                $iframe.style.height = data+"px";
+                break;
+        }
+    }, false);
+</script>
+<iframe id="theExternalPage" src="index_1.html"
+frameborder="0" width="100%" style="border: 0; width:100%; overflow:hidden;">Your browser does not support iframes.</iframe>
+
+In SubPages:
+<script type="text/javascript">
+function resize() {
+	var D = document//.getElementById('content')
+	//var D = document.getElementById('content')
+	height = Math.max(
+	        //D.body.scrollHeight, D.documentElement.scrollHeight,
+	        //D.body.offsetHeight, D.documentElement.offsetHeight,
+	        //D.body.clientHeight, D.documentElement.clientHeight
+	    );
+    //var height = document.getElementsByTagName('body').clientHeight//document.getElementsByTagName('html').clientHeight();
+	var height = D.height
+    // Backwards – send message to parent
+    window.parent.postMessage(['setHeight', height], '*');
+}
+</script>
+
+with this at the bottom,
+<script type="text/javascript">resize()</script>
+
+
+
+
+

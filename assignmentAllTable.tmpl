@@ -1,0 +1,48 @@
+<p><a href="index.html">assignments list</a></p>
+
+<h3> Overall Rank (Approximate) - <a href="${assignmentID}_s.html">summary view</a> </h3>
+
+<div class="datagrid">
+<table border="1">
+
+<thead>		
+<tr style="font-weight:bold;">
+    <th>User Name</th>
+	% for part in parts:
+		<th><a href="${assignmentID}_${part[1]}.html">${part[2]}</a></th>
+	%endfor
+</tr>
+</thead>
+	
+<tbody>
+% for i, user in enumerate(userIds): 
+%if i % 2 == 0:
+	<tr>
+%else:
+	<tr class="alt">
+%endif
+    <td class="usr">${userNames[user]}</td>
+	% for part in parts:
+	    %if results[user][part[0]] == None:
+			<td> --- </td>
+		%else:
+			%if results[user][part[0]][3]:
+				%if int(results[user][part[0]][2]) == bestVals[part[0]]:
+			  		<td class="proof">
+				%else:
+					<td class="proof lie">
+				%endif
+			%else:
+				<td>
+			%endif
+				${int(results[user][part[0]][2])}
+				</td>
+		%endif	
+	%endfor
+</tr>
+% endfor
+</tbody>
+</table>
+</div>
+
+<p>Note: This matrix is ordered roughly by rank in each part.</p>

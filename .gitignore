@@ -1,0 +1,6 @@
+*.html
+*.pdf
+*.png
+*.data
+*.Rout
+.DS_Store
