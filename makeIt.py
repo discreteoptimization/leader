@@ -57,7 +57,7 @@ except mysql.connector.Error, err:
         print err
         exit()
 
-lookup_assignments_query = 'SELECT * FROM ' + config.database + '.`assignment` '
+lookup_assignments_query = 'SELECT * FROM ' + config.database + '.`assignment` WHERE `assignment`.`sense` >= 0'
 query_data = ()
 cursor.execute(lookup_assignments_query, query_data)
 assignments = cursor.fetchall()
@@ -91,8 +91,8 @@ for assignment in assignments:
         bestValueSQLOp = 'MAX'
 
     lookup_assignments_parts_query = 'SELECT `problem`.`partID`,`problem`.`partNumber`,`problem`.`problemName`,`problem`.`problemNameLong`,`problem`.`grade1`,`problem`.`grade2` '\
-                                     'FROM '+config.database+'.`problem` INNER JOIN (SELECT `partID` FROM '+config.database+'.`result` '\
-                                     'WHERE `result`.`assignmentID` = %s GROUP BY `result`.`partID`) AS Parts ON `problem`.`partID`=`Parts`.`partID` '\
+                                     'FROM '+config.database+'.`problem` INNER JOIN (SELECT `partID` FROM '+config.database+'.`leader` '\
+                                     'WHERE `leader`.`assignmentID` = %s GROUP BY `leader`.`partID`) AS Parts ON `problem`.`partID`=`Parts`.`partID` '\
                                      'ORDER BY `partNumber`'
     query_data = (assignmentID,)
     cursor.execute(lookup_assignments_parts_query, query_data)
@@ -147,8 +147,8 @@ for assignment in assignments:
 
         lookup_results_query = \
             'SELECT `ID`, `courseraUserID`, `quality`, `proof`, `time` '\
-            'FROM '+config.database+'.`result` WHERE `result`.`assignmentID`=%s AND `result`.`partID`=%s '\
-            'ORDER BY `result`.`quality` '+sortDirection+', `result`.`proof` DESC, `result`.`timestamp` DESC'
+            'FROM '+config.database+'.`leader` WHERE `leader`.`assignmentID`=%s AND `leader`.`partID`=%s '\
+            'ORDER BY `leader`.`quality` '+sortDirection+', `leader`.`proof` DESC, `leader`.`timestamp` DESC'
 
         query_data = (assignmentID, partId)
 

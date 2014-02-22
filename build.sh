@@ -1,8 +1,9 @@
+#!/bin/bash
+
 clean.sh
 
-cd ..
+rm -rf builds
+mkdir builds
 
-rm leader.zip
-zip leader.zip leader/*.tmpl leader/*.css leader/*.r leader/update.sh leader/schedule leader/makeIt.py leader/postIt.py
-
-cd leader
+zip leader.zip tmpls/*.tmpl *.css *.r update.sh schedule leader.py makeIt.py makePoints.py postIt.py _config
+mv leader.zip builds
