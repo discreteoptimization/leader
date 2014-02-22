@@ -1,3 +1,5 @@
+body {margin:10px;}
+
 .datagrid {background: #fff; overflow: hidden; border: 0px solid #006699; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
 .datagrid table { border-collapse: collapse; text-align: right; border: 2px solid #006699; margin-bottom:5px;} 
 .datagrid table td, .datagrid table th { padding: 3px 10px; }
