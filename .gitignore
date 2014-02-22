@@ -3,4 +3,5 @@
 *.png
 *.data
 *.Rout
+*.pyc
 .DS_Store

@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from leader import *
+config = load_config()
+
 import sys
 def percent_cb(complete, total): 
     sys.stdout.write('.')
@@ -9,15 +12,10 @@ def percent_cb(complete, total):
 import time
 startTime = time.time()
 
-sessionID = '001_dev'
-
-access_key = 'AKIAJPIDXTUN6JJOU7KA'
-secret_key = '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'
-
 import boto.sns
 
-sns_conn = boto.sns.connect_to_region(aws_access_key_id=access_key,
-                                      aws_secret_access_key=secret_key,
+sns_conn = boto.sns.connect_to_region(aws_access_key_id=config.access_key,
+                                      aws_secret_access_key=config.secret_key,
                                       region_name='us-east-1')
 
 
@@ -25,8 +23,8 @@ import boto.s3.connection
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 
-conn = boto.connect_s3(aws_access_key_id=access_key,
-                       aws_secret_access_key=secret_key,
+conn = boto.connect_s3(aws_access_key_id=config.access_key,
+                       aws_secret_access_key=config.secret_key,
                        calling_format=boto.s3.connection.OrdinaryCallingFormat())
     # host = 'objects.dreamhost.com',
     # host = 's3.amazonaws.com' default
@@ -56,7 +54,7 @@ for (dirpath, dnames, fnames) in os.walk('./'):
         # print dirpath, dnames, f
         if f.endswith('.html') or f.endswith('.css') or f.endswith('.ico') or f.endswith('.png') or f.endswith('.pdf'):
             fileName = os.path.join(dirpath, f)
-            remoteLocation = sessionID+'/'+f
+            remoteLocation = config.session_id+'/'+f
             print 'Uploading %s to Amazon S3 bucket %s at %s' % (f, dopt, remoteLocation)
             k.key = remoteLocation
             k.set_contents_from_filename(fileName, cb=percent_cb, num_cb=10)
@@ -73,7 +71,7 @@ for (dirpath, dnames, fnames) in os.walk('./'):
 #        #print dirpath, dnames, f
 #        if f.endswith('.zip') and f.startswith('leader_'):
 #            fileName = os.path.join(dirpath, f)
-#            remoteLocation = sessionID+'/'+f
+#            remoteLocation = config.session_id+'/'+f
 #            print 'Uploading %s to Amazon S3 bucket %s at %s' % (f, dopt_logs, remoteLocation)
 #            k.key = remoteLocation
 #            k.set_contents_from_filename(fileName, cb=percent_cb, num_cb=10)
@@ -86,7 +84,6 @@ for (dirpath, dnames, fnames) in os.walk('./'):
 
 endTime = time.time()
 
-topicarn = 'arn:aws:sns:us-east-1:998334448481:leader'
 subject = 'Leader Board Posted'
 message = 'time: '+str(endTime-startTime)+'\n'+\
           'uploaded html: '+str(uploadedHTML)+' - '+str(uploadedHTMLSize)+'\n'+\
@@ -94,5 +91,5 @@ message = 'time: '+str(endTime-startTime)+'\n'+\
 
 print 'subject:',subject
 print 'body:',message
-publication = sns_conn.publish(topicarn, message, subject=subject)
+publication = sns_conn.publish(config.topicarn, message, subject=subject)
 

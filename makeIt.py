@@ -1,15 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-access_key = 'AKIAJPIDXTUN6JJOU7KA'
-secret_key = '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'
+from leader import *
 
-user = 'coursera'
-password = 'optimization is fun'
+config = load_config()
 
-host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
-database = 'dopt_results'
-
+#print config
 
 from subprocess import Popen, PIPE
 import time
@@ -18,8 +14,8 @@ import boto.sns
 
 startTime = time.time()
 
-sns_conn = boto.sns.connect_to_region(aws_access_key_id=access_key,
-                                      aws_secret_access_key=secret_key,
+sns_conn = boto.sns.connect_to_region(aws_access_key_id=config.access_key,
+                                      aws_secret_access_key=config.secret_key,
                                       region_name='us-east-1')
 
 import mysql.connector
@@ -44,7 +40,7 @@ cnx = None
 cursor = None
 
 try:
-    cnx = mysql.connector.connect(user=user, password=password,host=host, database=database)
+    cnx = mysql.connector.connect(user=config.user_name, password=config.password, host=config.host, database=config.database)
     # print(self.cnx)
     cursor = cnx.cursor()
 except mysql.connector.Error, err:
@@ -61,7 +57,7 @@ except mysql.connector.Error, err:
         print err
         exit()
 
-lookup_assignments_query = 'SELECT * FROM ' + database + '.`assignment` '
+lookup_assignments_query = 'SELECT * FROM ' + config.database + '.`assignment` '
 query_data = ()
 cursor.execute(lookup_assignments_query, query_data)
 assignments = cursor.fetchall()
@@ -71,7 +67,7 @@ output = open(fileName, 'w')
 output.write(assignmentsTmpl.render(assignmentList=assignments))
 output.close()
 
-lookup_users_query = 'SELECT * FROM ' + database + '.`user` '
+lookup_users_query = 'SELECT * FROM ' + config.database + '.`user` '
 query_data = ()
 cursor.execute(lookup_users_query, query_data)
 users = cursor.fetchall()
@@ -95,7 +91,7 @@ for assignment in assignments:
         bestValueSQLOp = 'MAX'
 
     lookup_assignments_parts_query = 'SELECT `problem`.`partID`,`problem`.`partNumber`,`problem`.`problemName`,`problem`.`problemNameLong`,`problem`.`grade1`,`problem`.`grade2` '\
-                                     'FROM '+database+'.`problem` INNER JOIN (SELECT `partID` FROM '+database+'.`result` '\
+                                     'FROM '+config.database+'.`problem` INNER JOIN (SELECT `partID` FROM '+config.database+'.`result` '\
                                      'WHERE `result`.`assignmentID` = %s GROUP BY `result`.`partID`) AS Parts ON `problem`.`partID`=`Parts`.`partID` '\
                                      'ORDER BY `partNumber`'
     query_data = (assignmentID,)
@@ -151,7 +147,7 @@ for assignment in assignments:
 
         lookup_results_query = \
             'SELECT `ID`, `courseraUserID`, `quality`, `proof`, `time` '\
-            'FROM '+database+'.`result` WHERE `result`.`assignmentID`=%s AND `result`.`partID`=%s '\
+            'FROM '+config.database+'.`result` WHERE `result`.`assignmentID`=%s AND `result`.`partID`=%s '\
             'ORDER BY `result`.`quality` '+sortDirection+', `result`.`proof` DESC, `result`.`timestamp` DESC'
 
         query_data = (assignmentID, partId)
@@ -336,7 +332,6 @@ for assignment in assignments:
 
 endTime = time.time()
 
-topicarn = 'arn:aws:sns:us-east-1:998334448481:leader'
 subject = 'Leader Board Built'
 message = 'time: '+str(endTime-startTime)+'\n'
 #          'bid: '+str(bid)+'\n'+\
@@ -344,5 +339,5 @@ message = 'time: '+str(endTime-startTime)+'\n'
 
 print 'subject:',subject
 print 'body:',message
-publication = sns_conn.publish(topicarn, message, subject=subject)
+publication = sns_conn.publish(config.topicarn, message, subject=subject)
 
