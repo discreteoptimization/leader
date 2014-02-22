@@ -33,7 +33,7 @@ def getVectorData(cursor, sql, index):
     return [r[index] for r in results]
 
 def getPointData(cursor, days):
-    pointsEver = getVectorData(cursor,'SELECT `ptbl`.courseraUserID, SUM(`ptbl`.points) AS total FROM (SELECT `submission`.`courseraUserID`, `submission`.`partID`, MAX(`submission`.`grade`) AS points FROM `'+config.database+'`.`submission` WHERE DATEDIFF(NOW(),`submission`.`timestamp`) > '+str(days)+' GROUP BY `submission`.`courseraUserID`, `submission`.`partID`) AS ptbl GROUP BY `ptbl`.`courseraUserID` HAVING total > 1 ORDER BY total DESC;',1)
+    pointsEver = getVectorData(cursor,'SELECT `ptbl`.courseraUserID, SUM(`ptbl`.points) AS total FROM (SELECT `submission`.`courseraUserID`, `submission`.`partID`, MAX(`submission`.`grade`) AS points FROM `'+config.database+'`.`submission` WHERE `submission`.`assignmentID` >= 0 AND `submission`.`assignmentID` <= 5 AND DATEDIFF(NOW(),`submission`.`timestamp`) > '+str(days)+' GROUP BY `submission`.`courseraUserID`, `submission`.`partID`) AS ptbl GROUP BY `ptbl`.`courseraUserID` HAVING total > 1 ORDER BY total DESC;',1)
     return pointsEver
 
 

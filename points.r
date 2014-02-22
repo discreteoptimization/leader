@@ -5,7 +5,7 @@ dataFile14 = "points14.data"
 dataFile21 = "points21.data"
 
 goal = 1000
-bounds = c(0,400)
+bounds = c(0,321)
 
 targets = c(42,84,126,182,224)
 goals = rep(goal, length(targets))
@@ -30,7 +30,7 @@ data21 = read.csv(dataFile21,header=FALSE,sep=",",stringsAsFactors=TRUE)
 #dataOrdered = data[order(data)]
 #print(dataOrdered)
 
-proportional_target = length(data0)*previous_rate
+proportional_target = round(length(data0)*previous_rate)
 #print(proportional_target)
 
 counts = rep(0, length(targets))
@@ -69,7 +69,7 @@ fileName = "points.pdf"
 pdf(fileName, pointsize=16, width=12, height=8)
     par(mar=c(4.5,4.5,0.5,0.5))
 	#main="Parts Completed by Students"
-	plot(c(bounds[1]+20,bounds[2]-15), c(50,length(data0)-150), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n') #, panel.first=grid()
+	plot(c(bounds[1]+17,bounds[2]-15), c(0,length(data0)), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n')
 	
 	for(i in 1:length(targets)){
 		points(c(targets[i],targets[i]), c(counts[i],-500), type='l', lty=1, lw=3, col=rgb(0.0,0.0,0.0,0.2))
