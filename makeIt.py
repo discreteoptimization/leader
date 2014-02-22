@@ -30,14 +30,14 @@ from mako.lookup import TemplateLookup
 
 mylookup = TemplateLookup(directories=['.'])
 
-assignmentsTmpl = Template(filename='assignments.tmpl', lookup=mylookup)
-assignmentPartTableTmpl = Template(filename='assignmentPartTable.tmpl',lookup=mylookup)
-assignmentAllTableTmpl = Template(filename='assignmentAllTable.tmpl',lookup=mylookup)
-assignmentAllNoneTmpl = Template(filename='assignmentAllNone.tmpl',lookup=mylookup)
-assignmentAllSummaryTmpl = Template(filename='assignmentAllSummary.tmpl',lookup=mylookup)
-assignmentAllNotEnoughTmpl = Template(filename='assignmentAllNotEnough.tmpl',lookup=mylookup)
-assignmentStartTmpl = Template(filename='assignmentStart.tmpl',lookup=mylookup)
-assignmentEndTmpl = Template(filename='assignmentEnd.tmpl',lookup=mylookup)
+assignmentsTmpl = Template(filename='tmpls/assignments.tmpl', lookup=mylookup)
+assignmentPartTableTmpl = Template(filename='tmpls/assignmentPartTable.tmpl',lookup=mylookup)
+assignmentAllTableTmpl = Template(filename='tmpls/assignmentAllTable.tmpl',lookup=mylookup)
+assignmentAllNoneTmpl = Template(filename='tmpls/assignmentAllNone.tmpl',lookup=mylookup)
+assignmentAllSummaryTmpl = Template(filename='tmpls/assignmentAllSummary.tmpl',lookup=mylookup)
+assignmentAllNotEnoughTmpl = Template(filename='tmpls/assignmentAllNotEnough.tmpl',lookup=mylookup)
+assignmentStartTmpl = Template(filename='tmpls/assignmentStart.tmpl',lookup=mylookup)
+assignmentEndTmpl = Template(filename='tmpls/assignmentEnd.tmpl',lookup=mylookup)
 
 
 cnx = None
