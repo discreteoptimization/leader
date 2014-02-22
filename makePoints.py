@@ -33,14 +33,19 @@ def getVectorData(cursor, sql, index):
     return [r[index] for r in results]
 
 def getPointData(cursor, days):
-    pointsEver = getVectorData(cursor, 
-                'SELECT `ptbl`.courseraUserID, SUM(`ptbl`.points) AS Total FROM' + 
-                    '(SELECT courseraUserID, partID, MAX(`submission`.`grade`) AS points FROM `'+database+'`.submission WHERE DATEDIFF(NOW(), `submission`.`timestamp`) > '+str(days)+' GROUP BY `submission`.`courseraUserID`,`submission`.`partID`) '+
-                    'AS ptbl GROUP BY `ptbl`.`courseraUserID` HAVING total > 1 ORDER BY total DESC;',1)
+    pointsEver = getVectorData(cursor,'SELECT `ptbl`.courseraUserID, SUM(`ptbl`.points) AS total FROM (SELECT `submission`.`courseraUserID`, `submission`.`partID`, MAX(`submission`.`grade`) AS points FROM `dopt_results`.`submission` WHERE DATEDIFF(NOW(),`submission`.`timestamp`) > '+str(days)+' GROUP BY `submission`.`courseraUserID`, `submission`.`partID`) AS ptbl GROUP BY `ptbl`.`courseraUserID` HAVING total > 1 ORDER BY total DESC;',1)
     return pointsEver
+
+#WHERE .`submission`.`courseraUserID` = '++'
+
+#user = 'coursera'
+#password = 'optimization is fun'
+#host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
+#database = 'dopt_results'
 
 user = 'coursera'
 password = 'optimization is fun'
+
 host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
 database = 'dopt_results'
 

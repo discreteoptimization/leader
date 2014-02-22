@@ -13,6 +13,7 @@ database = 'dopt_results'
 
 from subprocess import Popen, PIPE
 import time
+from datetime import datetime
 import boto.sns
 
 startTime = time.time()
@@ -75,9 +76,12 @@ query_data = ()
 cursor.execute(lookup_users_query, query_data)
 users = cursor.fetchall()
 
+#print 'users', len(users)
+#print users
 
 
 #assignments = assignments[2:3]
+#assignments = assignments[0:2]
 for assignment in assignments:
     assignmentID = int(assignment[0])
     assignmentName = assignment[1]
@@ -98,7 +102,7 @@ for assignment in assignments:
     cursor.execute(lookup_assignments_parts_query, query_data)
     partsAll = cursor.fetchall()
     
-
+    
     
     parts = []
     for part in partsAll:
@@ -112,9 +116,11 @@ for assignment in assignments:
 
     userName = {}
     userRank = {}
+    userScore = {}
     userResult = {}
     for user in users:
         userRank[user[1]] = 0
+        userScore[user[1]] = 0
         userName[user[1]] = user[2]
         userResults = {}
         for part in parts:
@@ -122,11 +128,11 @@ for assignment in assignments:
         userResult[user[1]] = userResults
     
     maxScore = {}
-    userRank = {}
-    userScore = {}
-    for user in users:
-        userRank[user[1]] = 0
-        userScore[user[1]] = 0
+    #userRank = {}
+    #userScore = {}
+    #for user in users:
+    #    userRank[user[1]] = 0
+    #    userScore[user[1]] = 0
         
     for part in parts:
         namePrefix = str(assignmentID) + '_' + str(part[1])
@@ -142,21 +148,6 @@ for assignment in assignments:
         bestVal = (-1234567890 if sense == 1 else 1234567890)
         partDistResults[partId] = None
         maxScore[partId] = 0
-        # lookup_results_query = (
-        # "SELECT `ID`, `userID`, `courseraUserID`, `UserName`, `assignmentID`, `problemID`, `problem`.`PartID`, `partNumber`, `problemName`, `quality`, `proof`, `mtime` FROM "+database+".`problem` INNER JOIN  "
-        # "  (SELECT * FROM "+database+".`user` INNER JOIN "
-        # "    (SELECT `result`.`ID`, `result`.`courseraUserID` AS `courseraUserID2`, `result`.`assignmentID`, `result`.`partID`, `result`.`quality`, `result`.`proof`, MIN(`result`.`time`) AS `mtime`"
-        # "       FROM "+database+".`result`"
-        # "       INNER JOIN"
-        # "         (SELECT partID AS partID2, courseraUserID AS courseraUserID2, "+bestValueSQLOp+"(`result`.`quality`) AS maxq "
-        # "            FROM "+database+".`result` WHERE `result`.`assignmentID`=%s AND `result`.`partID`=%s "
-        # "            GROUP BY `result`.`partID`, `result`.`courseraUserID`"
-        # "         ) AS qMax ON `result`.`partID`=`qMax`.`partID2` AND `result`.`courseraUserID`=`qMax`.`courseraUserID2` AND `result`.`quality`=`qMax`.`maxq` "
-        # "       GROUP BY `result`.`partID`, `result`.`courseraUserID`) "
-        # "    AS tbl1 ON `tbl1`.`courseraUserID2` = `user`.`courseraUserID`)"
-        # "  AS tbl2 ON `tbl2`.`partID` = `problem`.`partID`"
-        # "  ORDER BY `quality` "+sortDirection+", proof DESC, ID DESC"
-        # )
 
         lookup_results_query = \
             'SELECT `ID`, `courseraUserID`, `quality`, `proof`, `time` '\
@@ -166,7 +157,6 @@ for assignment in assignments:
         query_data = (assignmentID, partId)
 
         # print lookup_results_query % query_data
-
         cursor.execute(lookup_results_query, query_data)
         results = cursor.fetchall()
         
@@ -193,10 +183,12 @@ for assignment in assignments:
                     assignmentID, 'part', partId
             usersSeen.add(userId)
 
+            #print userId, userRank[userId], userResult[userId]
             try:
                 userRank[userId] = userRank[userId] + i
                 userResult[userId][partId] = r
-                rows.append(('NULL',str(bid),str(userId),str(assignmentID),str(partId),str(r[2]),str(r[3]),str(r[4]),str(i),))
+                #print ('NULL',str(bid),str(userId),str(assignmentID),str(partId),str(r[2]),str(r[3]),str(r[4]),str(i),)
+                rows.append(('NULL',0,str(userId),str(assignmentID),str(partId),str(r[2]),str(r[3]),str(r[4]),str(i),))  
             except:
                 print 'WARNING: user id', userId, 'is missing from the userRank or userResult maps'
             val = int(r[2])
@@ -206,9 +198,9 @@ for assignment in assignments:
             # print userId, " - ", userRank[userId]
 
         bestVals[partId] = bestVal
-        for r in rows:
+        #for r in rows:
             #log.write(','.join(r)+'\n')
-            logStr +=  ', '.join(r)+','+str(datetime.utcnow())+'\n'
+            #logStr +=  ', '.join(r)+','+str(datetime.utcnow())+'\n'
         # fileName = str(assignmentID)+".html"
         # print(assignmentTmpl.render(name=assignmentName, results = results))
         
@@ -262,6 +254,16 @@ for assignment in assignments:
             ranks.append(rank)
             
         maxScore[partId] = rank+1
+        
+        
+        #print assignmentID
+        #print partNameLong
+        #print userName
+        #print results 
+        #print bestVal 
+        #print ranks 
+        #print assignmentDistPrefix
+        #print len(rows)
         
         output = open(fileName, 'w')
         output.write(assignmentStartTmpl.render(name=assignmentName))
@@ -336,9 +338,9 @@ endTime = time.time()
 
 topicarn = 'arn:aws:sns:us-east-1:998334448481:leader'
 subject = 'Leader Board Built'
-message = 'time: '+str(endTime-startTime)+'\n'+\
-          'bid: '+str(bid)+'\n'+\
-          'log: '+zipFileName+'\n';
+message = 'time: '+str(endTime-startTime)+'\n'
+#          'bid: '+str(bid)+'\n'+\
+#          'log: '+zipFileName+'\n';
 
 print 'subject:',subject
 print 'body:',message
