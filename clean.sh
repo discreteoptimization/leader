@@ -1,1 +1,1 @@
-rm *.zip *.pdf *.html *.png *.data
+rm *.zip *.pdf *.html *.png *.data *.Rout *.pyc
