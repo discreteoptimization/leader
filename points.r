@@ -61,43 +61,47 @@ targetColor3 = rgb(1.0,0.2,0.2,1.0)
 
 
 
-
-offset = 200
+ymax = max(100,length(data0))
+offset = 0.05*ymax
 
 #fileName = paste(studyId,paste("points","pdf",sep="."),sep="_")
 fileName = "points.pdf"
 pdf(fileName, pointsize=16, width=12, height=8)
     par(mar=c(4.5,4.5,0.5,0.5))
 	#main="Parts Completed by Students"
-	plot(c(bounds[1]+17,bounds[2]-15), c(0,length(data0)), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n')
+	plot(c(bounds[1]+17,bounds[2]-15), c(0,ymax), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n')
 	
-	for(i in 1:length(targets)){
-		points(c(targets[i],targets[i]), c(counts[i],-500), type='l', lty=1, lw=3, col=rgb(0.0,0.0,0.0,0.2))
-		if(counts[i]<goal){
-		    #red line to target
-			#points(c(targets[i],targets[i]), c(goal,counts[i]), type='l', lw=3, col=targetColor2) #col=rgb(0.0,0.0,0.0,0.5)
-		}
-		#abline(v=targets[i], lw=1, col=targetColor1, lty=2)
-		
-		#points(c(-500,targets[i]), c(counts[i],counts[i]), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0))
+	if(length(data0) < 100){
+	    text((bounds[1]+bounds[2])/2, (0+ymax)/2, "Insufficient data to generate this plot.  Check back in a few days.")
+	} else {
+	    for(i in 1:length(targets)){
+    		points(c(targets[i],targets[i]), c(counts[i],-500), type='l', lty=1, lw=3, col=rgb(0.0,0.0,0.0,0.2))
+    		if(counts[i]<goal){
+    		    #red line to target
+    			#points(c(targets[i],targets[i]), c(goal,counts[i]), type='l', lw=3, col=targetColor2) #col=rgb(0.0,0.0,0.0,0.5)
+    		}
+    		#abline(v=targets[i], lw=1, col=targetColor1, lty=2)
+
+    		#points(c(-500,targets[i]), c(counts[i],counts[i]), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0))
+    	}
+    	#points(targets, goals-offset, pch=21, cex=3, lw=2, col="black", bg="white", type='p')
+    	#text(targets, goals-offset, 1:length(targets))
+
+    	points(c(-100,tail(targets,1)), c(proportional_target,proportional_target), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0), lty=1)
+    	#our dream
+    	#points(c(-100,tail(targets,1)), c(goal,goal), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0), lty=1)
+    	#points(c(tail(targets,1),tail(targets,1)), c(goal,-500), type='l', lw=3, col=targetColor3, lty=1)
+
+    	points(data21, 1:length(data21), type='l', lw=4, col=barColor21)
+        points(data14, 1:length(data14), type='l', lw=4, col=barColor14)
+        points(data7, 1:length(data7), type='l', lw=4, col=barColor7)
+    	points(data0, 1:length(data0), type='l', lw=4, col=barColor0)
+
+    	plotCircle(targets, counts-offset, 1:length(targets))
+    	#plotCircle(targets, rep(0, length(targets)), 1:length(targets))
+
+    	#plotCircle(rep(0, length(targets)), counts, 1:length(targets))
 	}
-	#points(targets, goals-offset, pch=21, cex=3, lw=2, col="black", bg="white", type='p')
-	#text(targets, goals-offset, 1:length(targets))
-	
-	points(c(-100,tail(targets,1)), c(proportional_target,proportional_target), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0), lty=1)
-	#our dream
-	#points(c(-100,tail(targets,1)), c(goal,goal), type='l', lw=3, col=rgb(0.0,0.0,0.0,1.0), lty=1)
-	#points(c(tail(targets,1),tail(targets,1)), c(goal,-500), type='l', lw=3, col=targetColor3, lty=1)
-	
-	points(data21, 1:length(data21), type='l', lw=4, col=barColor21)
-    points(data14, 1:length(data14), type='l', lw=4, col=barColor14)
-    points(data7, 1:length(data7), type='l', lw=4, col=barColor7)
-	points(data0, 1:length(data0), type='l', lw=4, col=barColor0)
-	
-	plotCircle(targets, counts-offset, 1:length(targets))
-	#plotCircle(targets, rep(0, length(targets)), 1:length(targets))
-	
-	#plotCircle(rep(0, length(targets)), counts, 1:length(targets))
 	
 
 
