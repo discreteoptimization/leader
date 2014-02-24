@@ -1,0 +1,42 @@
+<h3> ${partName} </h3>
+
+<div class="datagrid">
+<table border="1">
+<thead>	
+<tr>
+	<th>Position</th>
+	<th>Rank</th>
+    <th>User Name</th>
+	<th>Quality</th>
+</tr>
+</thead>	
+
+<tbody>
+% for i, r in enumerate(results):
+    %if ranks[i] < 10 :
+	    %if i % 2 == 0:
+    		<tr>
+    	%else:
+    		<tr class="alt">
+    	%endif		
+    		<td class="position">${i+1}</td>
+    		<td class="rank">${ranks[i]+1}</td>
+    	    <td class="usr">${userNames[r[1]]}</td>
+    		%if r[3]:
+    			%if int(r[2]) == bestVal:
+    		  		<td class="proof">
+    			%else:
+    				<td class="proof lie">
+    			%endif
+    		%else:
+    			<td>
+    		%endif
+    		${'%0.3f' % r[2]}</td>
+    	</tr>
+    %endif
+% endfor
+</tbody>
+</table>
+</div>
+
+## <p>Notes: Position is determined by, solution quality, proof flag, and most recent submission time.  Rank is determined by changes in, solution quality and proof flag.  The solution distribution excludes some of the low quality solutions.  The red line indicates the median of the distribution.</p>
