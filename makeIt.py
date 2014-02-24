@@ -57,7 +57,7 @@ except mysql.connector.Error, err:
         print err
         exit()
 
-lookup_assignments_query = 'SELECT * FROM ' + config.database + '.`assignment` WHERE `assignment`.`sense` >= 0'
+lookup_assignments_query = 'SELECT * FROM ' + config.database + '.`assignment` WHERE `assignment`.`dispOrder` >= 0 ORDER BY `assignment`.`dispOrder`'
 query_data = ()
 cursor.execute(lookup_assignments_query, query_data)
 assignments = cursor.fetchall()
