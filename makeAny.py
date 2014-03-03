@@ -68,9 +68,11 @@ users = cursor.fetchall()
 
 userName = {}
 userRank = {}
+userScore = {}
 for user in users:
     userName[user[1]] = user[2]
     userRank[user[1]] = 0
+    userScore[user[1]] = 0
 
 
 
