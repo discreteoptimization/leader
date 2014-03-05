@@ -75,7 +75,10 @@ for t in timePoints:
 
     fileName = 'points'+str(max(t,0))+'.data'
     output = open(fileName, 'w')
-    output.write(','.join([str(d) for d in pointsEver]) + '\n')
+    if len(pointsEver) > 0:
+        output.write(','.join([str(d) for d in pointsEver]) + '\n')
+    else:
+        output.write('-100\n')
     output.close()
 
 

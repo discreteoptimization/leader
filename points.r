@@ -69,7 +69,7 @@ fileName = "points.pdf"
 pdf(fileName, pointsize=16, width=12, height=8)
     par(mar=c(4.5,4.5,0.5,0.5))
 	#main="Parts Completed by Students"
-	plot(c(bounds[1]+17,bounds[2]-15), c(0,ymax), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n')
+	plot(c(bounds[1]+17,bounds[2]-15), c(-offset,ymax), ylab="Total Number of Students", xlab="Points Awarded", main="", type='n')
 	
 	if(length(data0) < 100){
 	    text((bounds[1]+bounds[2])/2, (0+ymax)/2, "Insufficient data to generate this plot.  Check back in a few days.")
