@@ -50,17 +50,18 @@ k = Key(dopt)
 print 'Starting Upload to HTML Bucket'
 import os
 for (dirpath, dnames, fnames) in os.walk('./'):
-    for f in fnames:
-        # print dirpath, dnames, f
-        if f.endswith('.html') or f.endswith('.css') or f.endswith('.ico') or f.endswith('.png') or f.endswith('.pdf'):
-            fileName = os.path.join(dirpath, f)
-            remoteLocation = config.session_id+'/'+f
-            print 'Uploading %s to Amazon S3 bucket %s at %s' % (f, dopt, remoteLocation)
-            k.key = remoteLocation
-            k.set_contents_from_filename(fileName, cb=percent_cb, num_cb=10)
-            #print ''
-            uploadedHTML += 1
-            uploadedHTMLSize += os.path.getsize(fileName)
+    if 'bin' not in dirpath:
+      for f in fnames:
+          # print dirpath, dnames, f
+          if f.endswith('.html') or f.endswith('.css') or f.endswith('.ico') or f.endswith('.png') or f.endswith('.pdf'):
+              fileName = os.path.join(dirpath, f)
+              remoteLocation = config.session_id+'/'+f
+              print 'Uploading %s to Amazon S3 bucket %s at %s' % (f, dopt, remoteLocation)
+              k.key = remoteLocation
+              k.set_contents_from_filename(fileName, cb=percent_cb, num_cb=10)
+              #print ''
+              uploadedHTML += 1
+              uploadedHTMLSize += os.path.getsize(fileName)
 
 
 #dopt_logs = Bucket(conn, name='dopt-logs')
