@@ -22,13 +22,8 @@ assignmentEndTmpl = Template(filename='assignmentEnd.tmpl',
 # assignmentTmpl = Template(filename='header.tmpl')
 # FooterTmpl = Template(filename='footer.tmpl')
 
-# user='coursera_testing'
-# password='testing is fun'
-# host='mysqldb.discreteoptimization.com'
-# database='coursera_results'
-
 user = 'testing'
-password = 'testing is fun'
+password = ''
 host = 'dopt-results.cwf0g50wotli.us-east-1.rds.amazonaws.com'
 database = 'dopt_results'
 
